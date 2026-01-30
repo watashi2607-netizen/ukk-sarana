@@ -7,6 +7,8 @@ use App\Models\InputAspirasi;
 use App\Models\Aspirasi;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class SiswaController extends \App\Http\Controllers\Controller
 {
@@ -16,14 +18,14 @@ class SiswaController extends \App\Http\Controllers\Controller
             $siswa = session('user');
             $userType = session('user_type');
             
-            \Log::info('Dashboard access attempt', [
+            Log::info('Dashboard access attempt', [
                 'user_type' => $userType,
                 'siswa_exists' => $siswa ? 'yes' : 'no',
                 'siswa_name' => $siswa ? $siswa->nama : 'null'
             ]);
             
             if (!$siswa || $userType !== 'siswa') {
-                \Log::warning('Unauthorized access to siswa dashboard', [
+                Log::warning('Unauthorized access to siswa dashboard', [
                     'user_type' => $userType,
                     'siswa' => $siswa
                 ]);
@@ -40,7 +42,7 @@ class SiswaController extends \App\Http\Controllers\Controller
             
             return view('siswa.dashboard', compact('siswa', 'totalInputAspirasi', 'totalAspirasiSelesai', 'totalAspirasiMenunggu'));
         } catch (\Exception $e) {
-            \Log::error('Siswa dashboard error', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('Siswa dashboard error', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return redirect('/login')->withErrors(['login' => 'Terjadi kesalahan sistem.']);
         }
     }
@@ -123,7 +125,7 @@ class SiswaController extends \App\Http\Controllers\Controller
         if ($request->hasFile('gambar')) {
             // Hapus gambar lama jika ada
             if ($inputAspirasi->gambar) {
-                \Storage::disk('public')->delete($inputAspirasi->gambar);
+                Storage::disk('public')->delete($inputAspirasi->gambar);
             }
             $gambarPath = $request->file('gambar')->store('aspirasi', 'public');
         }
@@ -150,7 +152,7 @@ class SiswaController extends \App\Http\Controllers\Controller
 
         // Hapus gambar jika ada
         if ($inputAspirasi->gambar) {
-            \Storage::disk('public')->delete($inputAspirasi->gambar);
+            Storage::disk('public')->delete($inputAspirasi->gambar);
         }
 
         // Hapus aspirasi terkait

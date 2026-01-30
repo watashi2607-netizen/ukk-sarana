@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\Admin;
 use App\Models\Siswa;
 
@@ -59,11 +60,11 @@ class LoginController extends Controller
                              ->first();
 
                 if (!$siswa) {
-                    \Log::info('Siswa login failed: data not found', ['nis' => $request->nis, 'kelas' => $request->kelas]);
+                    Log::info('Siswa login failed: data not found', ['nis' => $request->nis, 'kelas' => $request->kelas]);
                     return back()->withErrors(['login' => 'Data siswa tidak ditemukan']);
                 }
 
-                \Log::info('Siswa login successful', ['siswa_id' => $siswa->id, 'nis' => $siswa->nis]);
+                Log::info('Siswa login successful', ['siswa_id' => $siswa->id, 'nis' => $siswa->nis]);
 
                 // Clear old session
                 session()->flush();
@@ -72,14 +73,14 @@ class LoginController extends Controller
                 session()->put('user_type', 'siswa');
                 // session()->save(); // Remove this, Laravel handles it automatically
 
-                \Log::info('Session set for siswa', ['user_type' => session('user_type'), 'user_nis' => session('user')->nis ?? 'null']);
+                Log::info('Session set for siswa', ['user_type' => session('user_type'), 'user_nis' => session('user')->nis ?? 'null']);
 
                 return redirect()->route('siswa.dashboard');
             }
 
             return back()->withErrors(['login' => 'Tipe login tidak valid']);
         } catch (\Exception $e) {
-            \Log::error('Login error', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('Login error', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return back()->withErrors(['login' => 'Terjadi kesalahan sistem']);
         }
     }

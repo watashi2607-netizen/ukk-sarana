@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Aspirasi;
 use App\Models\InputAspirasi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -24,7 +25,7 @@ class DashboardController extends Controller
                 'totalInputAspirasi'
             ));
         } catch (\Exception $e) {
-            \Log::error('Admin dashboard error', ['error' => $e->getMessage()]);
+            Log::error('Admin dashboard error', ['error' => $e->getMessage()]);
             return view('admin.dashboard', [
                 'totalAspirasiMenunggu' => 0,
                 'totalAspirasiProses' => 0,
